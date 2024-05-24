@@ -17,7 +17,7 @@ fi
 
 echo '##################################################################'
 echo '# be sure you have all requirements BEFORE running this script  ##'
-echo '# linux*-headers acpi_call-dkms xf86-video-intel git xorg-xrandr##'
+echo '# video-nvidia-390xx                                            ##'
 echo '# ****installing in 5 sec... CTRL+C to abort****                ##'
 echo '##################################################################'
 sleep 6
@@ -44,57 +44,40 @@ rm -rf /etc/X11/xorg.conf.d/20-intel.conf
 rm -rf /etc/X11/xorg.conf.d/nvidia.conf
 rm -rf /etc/X11/xorg.conf.d/xorg.conf
 echo 'Removing gpu configurations from /etc/X11/xorg.conf.d/ ........'
-rm -rf /etc/modprobe.d/mhwd-gpu.conf
+#rm -rf /etc/modprobe.d/mhwd-gpu.conf
 rm -rf /etc/modprobe.d/optimus.conf
 rm -rf /etc/modprobe.d/nvidia.conf
 echo 'Removing gpu configurations from /etc/modprobe.d/  ........'
 rm -rf /etc/modprobe.d/nvidia-drm.conf
 rm -rf /etc/modprobe.d/nvidia.conf
 echo 'Removing gpu configurations from /etc/modules-load.d/'
-rm -rf /etc/modules-load.d/mhwd-gpu.conf
+#rm -rf /etc/modules-load.d/mhwd-gpu.conf
 echo 'removing any display setup scripts.....'
-rm -rf /usr/share/sddm/scripts/Xsetup
 rm -rf /usr/local/share/optimus.desktop
 rm -rf /usr/local/bin/optimus.sh
 sleep 2
 
 echo 'Copying contents of ~/optimus-switch-sddm/* to /etc/ .......'
-mkdir /etc/switch/
-cp -r * /etc/
+mkdir -p /etc/switch/
+cp -r switch /etc/
+cp README*.md /etc/switch/
 
 sleep 2
 echo 'Copying set-intel.sh and set-nvidia.sh to /usr/local/bin/'
 
-cp /etc/switch/set-intel.sh /usr/local/bin/set-intel.sh
-
-cp /etc/switch/set-nvidia.sh /usr/local/bin/set-nvidia.sh
-
-###This section is intended for GDM and is not needed for LightDM or SDDM .
-#cp /etc/switch/optimus.desktop /usr/local/share/optimus.desktop
-#sleep 1
-#echo 'Copying disable-nvidia.service to /etc/systemd/system/' 
-#cp /etc/switch/intel/disable-nvidia.service /etc/systemd/system/disable-nvidia.service
-#chown root:root /etc/systemd/system/disable-nvidia.service
-#chmod 644 /etc/systemd/system/disable-nvidia.service
-
-sleep 1
-echo ' '
-echo 'Setting nvidia prime mode (sudo set-nvidia.sh).......'
-
-cp /etc/switch/nvidia/nvidia-xorg.conf /etc/X11/xorg.conf.d/99-nvidia.conf
-cp /etc/switch/nvidia/nvidia-modprobe.conf /etc/modprobe.d/99-nvidia.conf
-cp /etc/switch/nvidia/nvidia-modules.conf /etc/modules-load.d/99-nvidia.conf
-cp /etc/switch/nvidia/optimus.sh /usr/share/sddm/scripts/Xsetup
+ln -sf /etc/switch/set-intel.sh /usr/local/bin/set-intel.sh
+ln -sf /etc/switch/set-nvidia.sh /usr/local/bin/set-nvidia.sh
 
 sleep 1
 echo ' '
 echo 'Setting permissions........'
-chmod +x /usr/local/bin/set-intel.sh
-chmod +x /usr/local/bin/set-nvidia.sh
-chmod a+rx /usr/share/sddm/scripts/Xsetup
-chmod a+rx /etc/switch/intel/no-optimus.sh
-chmod a+rx /etc/switch/nvidia/optimus.sh
-chmod +x /etc/switch/gpu_switch_check.sh
+chmod +x /etc/switch/set-intel.sh
+chmod +x /etc/switch/set-nvidia.sh
+
+sleep 1
+echo ' '
+echo 'Setting nvidia prime mode (sudo set-nvidia.sh).......'
+cp -f /etc/switch/nvidia/nvidia-xorg.conf /etc/X11/mhwd.d/nvidia.conf
 
 sleep 1
 echo ' '
@@ -109,7 +92,3 @@ echo ' '
 sleep 1
 echo 'Install finished!'
 echo ' '
-
-
- 
- 
