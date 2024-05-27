@@ -8,7 +8,7 @@ If you're using LightDM or GDM, you can get to those repo's here: https://github
 - It provides two modes of operation:
   - PRIME mode for best *performance* by utilizing nvidia GPU
   - intel mode for best *battery life* by utilizing intel GPU (see point below)
-- In intel mode, nvidia GPU is completely powered off (won't be visible in `inxi -G` or `lspci -v | grep -E 'VGA|3D'`)
+- In Intel mode, Nvidia GPU cannot be completely shut down, but it will display the non-call state (use 'lshw-c video' to see the NVIDIA GPU information)
 - Does not negatively effect sleep/suspend cycles (hangs/lockups).
 - Easy switching between two modes mentioned above.
 
