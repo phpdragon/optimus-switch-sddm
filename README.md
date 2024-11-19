@@ -1,41 +1,41 @@
 # optimus-switch for SDDM
-## Introduction
-If you're using LightDM or GDM, you can get to those repo's here: https://github.com/dglt1. This includes an install script to remove conflicting configurations, blacklists, loading of drivers/modules.
+## 介绍
 
-*Made by a manjaro user for use with manjaro linux.* (other distros require modifications)
+如果你正在使用LightDM或GDM，你可以使用这个仓库:https://github.com/dglt1。这包括一个安装脚本，以删除冲突的配置，黑名单，加载驱动程序/模块。
 
-## Features
-- It provides two modes of operation:
-  - PRIME mode for best *performance* by utilizing nvidia GPU
-  - intel mode for best *battery life* by utilizing intel GPU (see point below)
-- In Intel mode, Nvidia GPU cannot be completely shut down, but it will display the non-call state (use 'lshw-c video' to see the NVIDIA GPU information)
-- Does not negatively effect sleep/suspend cycles (hangs/lockups).
-- Easy switching between two modes mentioned above.
+*由manjaro用户制作，用于manjaro linux。*(其他发行版需要修改)
 
-## How to Use
-### Requirements
-Check `sudo mhwd -li` to see what video drivers are installed, if you have others, start by removing them like this:
+## 特性
+- 它提供两种操作模式:
+  - PRIME模式最佳*性能*利用英伟达GPU
+  - 利用英特尔显卡的最佳电池寿命模式(见下文)
+- 在英特尔模式下，英伟达显卡无法完全关闭，但会显示不调用状态 (使用 `lshw -c video`可见到Nvidia显卡信息)
+- 不会对睡眠/挂起周期(挂起/锁定)产生负面影响。
+- 在上述两种模式之间轻松切换。
 
-`sudo mhwd -r pci video-driver-xxx` (remove any/all mhwd installed gpu drivers, xxx is replaced based on the command result above)
+## 如何使用
+### 必要依赖
+首先执行`sudo mhwd -li`查看系统安装了哪些显卡驱动程序，如果有其他驱动程序，请像这样开始删除它们:
 
-If you haven't installed any NVIDIA graphics drivers yet, do it now!
+`sudo mhwd -r pci video-driver-xxx` (删除任何/所有mhwd安装的显卡驱动程序，根据上面命令的结果替换xxx)
 
-Install NVIDIA graphics driver for ASUS-W519L model notebook:
+如果你还没有安装任何英伟达图形驱动程序，现在就开始安装！
+
+安装英伟达显卡驱动，适合ASUS-W519L型号笔记本:
 `sudo mhwd -f -i pci video-nvidia-390xx`
 
 ```bash
 sudo bash -c 'cat >> /etc/modprobe.d/mhwd-gpu.conf <<EOF
 
-# Resolved an issue with Nvidia graphics card driver tearing
+# 解决英伟达显卡驱动画面撕裂的问题
 options nvidia_drm modeset=1
 EOF'
 
-# Writes the kernel parameters configured above to the init image
+# 把上面配置的内核参数写入到引导镜像
 sudo mkinitcpio -P
 ```
-
-Run `sudo mhwd -li` again to see the currently installed drivers.
-Output:
+再次运行`sudo mhwd -li`查看当前安装的驱动程序。
+输出:
 ```text
 > Installed PCI configs:
 --------------------------------------------------------------------------------
@@ -44,12 +44,14 @@ Output:
     video-nvidia-390xx            2023.03.23               false            PCI
    network-broadcom-wl            2018.10.07               false            PCI
 ```
-The above output shows that the Nvidia driver is installed。
+以上输出说明Nvidia驱动已经安装。
 
-！！！After performing the above operations, do not restart the system！！！
+！！！执行以上操作后，请勿重启系统！！！
 
-### Cleaning 
-If you have any custom video/gpu .conf files in the following directories, backup/delete them (they can not remain there). The install script removes the most common ones, but custom file names won't be noticed (only you know if they exist) and clearing the entire directory would likely break other things, this install will not do that so clean up if necessary.
+### 清理
+如果您在以下目录下有自定义 video/gpu .conf 配置文件，请备份/删除它们(它们不能留在那里)。
+安装脚本删除了最常见的配置文件，但是不会注意到自定义文件名(只有您知道它们是否存在)，并且清除整个目录可能会破坏其他东西，这个安装脚本不会这样做，所以如果有必要，请清理你的自定义配置。
+
 ```
 /etc/X11/
 /etc/X11/mhwd.d/
@@ -57,30 +59,32 @@ If you have any custom video/gpu .conf files in the following directories, backu
 /etc/modprobe.d/
 /etc/modules-load.d/
 ```
-### Installation
-In terminal, from your home directory ~/  (this is important for the install script to work properly)
+
+### 安装
+在终端中，进入你的主目录 ~/ (这对于安装脚本的正常工作很重要)，克隆当前项目的代码
  ```
 git clone https://github.com/dglt1/optimus-switch-sddm.git
 cd ~/optimus-switch-sddm
 git switch ASUS-W519L && git pull
 sudo sh ./install.sh
 ```
-Done! After reboot you will be using intel/nvidia prime. 
 
-To set modes (post installation) do:
-- to change the default mode to intel only: `sudo set-intel.sh`
-- to switch the default mode to intel/nvidia prime: `sudo set-nvidia.sh`
- 
-## Usage
-NOTE: If you see errors about “*file does not exist*” while running `install.sh` its because it’s trying to remove the usual - mhwd-gpu/nvidia files that you may/may not have removed. 
+完成后并重启后，您将使用英特尔/英伟达prime。
 
-Only errors after "copying" starts should be of any concern. If you could save the output of the install script if you are having issues this makes it much easier to troubleshoot.
+要设置模式(安装后)，请执行以下操作:
+- 将默认模式切换为英特尔模式: `sudo set-intel.sh`
+- 将默认模式切换为英伟达模式: `sudo set-nvidia.sh`
 
-## Usage after running install script:  
+## 使用说明
+请注意: 如果你在运行`install.sh`时看到关于“*file does not exist*”的错误，这是因为它试图删除通常的- mhwd-gpu/nvidia 文件，你可能没有删除它们。
 
-- `sudo set-intel.sh` will set intel only mode, reboot and nvidia powered off and removed from view.
-- `sudo set-nvidia.sh` sets intel/nvidia (prime) mode.
+只有在“复制”开始后出现的错误才应该引起注意。如果您可以在遇到问题时保存安装脚本的输出，这将使故障排除变得容易得多。
 
-This should be pretty straight forward, if however, you cant figure it out, I am @dglt on the manjaro forum. I hope this is as useful for you as it is for me.
+## 运行安装脚本后的用法:
 
-Added side-note, for persistent changes to configurations, modify the configurations used for switching located in `/etc/switch/nvidia/`  and  `/etc/switch/intel/`.
+- `sudo set-intel.sh` 将设置为英特尔模式并重启生效，英伟达将断电并从视图中删除。
+- `sudo set-nvidia.sh` 将设置为英伟达(prime)模式并重启生效.
+
+这应该是相当直接的，但是，如果你不能弄清楚, 请在Manjaro论坛 @dglt, 希望这对你有帮助。
+
+对于更改配置，请修改位于`/etc/switch/nvidia/`和`/etc/switch/intel/`中的用于切换的配置文件。
